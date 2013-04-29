@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Playtomic HTML/JavaScript API Test</title>
+	<style>
+	* { padding: 0px; margin: 0px; font-size: 11px; list-style-type: none; font-family: Verdana, Arial, sans-serif; }
+	body { padding: 10px; background-color: #EEE; }
+	button { padding: 4px; }
+	ul { margin-bottom: 8px; }
+	h2 { margin-bottom: 2px; }
+	input { padding: 2px; background-color: #FFF; border: 1px solid #999; }
+	table { margin-bottom: 4px; }
+	th { text-align: left; font-weight: normal; color: #666; }
+	p { margin-bottom: 6px; }
+	li { margin-bottom: 6px; display: block; }
+	h3 { margin: 2px 0px; color: #333; }
+	ul.list { margin: 6px 0px 6px 10px; }
+	strong { color: #33C; }
+	strong.error { color: #900; }
+	</style>
+</head>
+<body>
+
+	<div id="debug"></div>
+
+	<script src="playtomic.js"></script>
+	<script>
+	
+	var tests = {
+		
+		gamevars: {
+		
+			all: function(done) {
+				Playtomic.GameVars.load(function(gv, r) {
+					var section = "gamevars.all";
+					gv = gv || {};
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertTrue(section, "Has known testvar1", gv.hasOwnProperty("testvar1"));
+					test.assertTrue(section, "Has known testvar2", gv.hasOwnProperty("testvar2"));
+					test.assertTrue(section, "Has known testvar3", gv.hasOwnProperty("testvar3"));
+					test.assertEquals(section, "Has known testvar1 value", gv["testvar1"], "testvalue1");
+					test.assertEquals(section, "Has known testvar2 value", gv["testvar2"], "testvalue2");
+					test.assertEquals(section, "Has known testvar3 value", gv["testvar3"], "testvalue3 and the final gamevar");
+					done();
+				});
+			},
+		
+			single: function(done) {
+				Playtomic.GameVars.loadSingle("testvar1", function(gv, r) {
+					var section = "gamevars.single";
+					console.log(section);
+					gv = gv || {};
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertTrue(section, "Has testvar1", gv.hasOwnProperty("testvar1"));
+					test.assertEquals(section, "Has known testvar1 value", gv["testvar1"], "testvalue1");
+					test.assertFalse(section, "Does not have testvar2", gv.hasOwnProperty("testvar2"));
+					test.assertFalse(section, "Does not have testvar3", gv.hasOwnProperty("testvar3"));
+					done();
+				});
+			}
+		},
+		
+		geoip: {
+			lookup: function(done) {
+				Playtomic.GeoIP.lookup(function(geo, r) {
+					var section = "geoip.lookup";
+					console.log(section);
+					geo = geo || {};
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertTrue(section, "Has country name", geo.hasOwnProperty("name"));
+					test.assertTrue(section, "Has country code", geo.hasOwnProperty("code"));
+					done();
+				});
+			}
+		}, 
+
+		playerlevels: {
+		
+			create: function(done) {
+			
+				var section = "playerlevels.create";
+				console.log(section);
+				
+				var level = {
+					name: "create level" + rnd,
+					playername: "ben" + rnd,
+					playerid: "0",
+					data: "this is the level data",
+					fields: {
+						rnd: rnd
+					}
+				}
+			
+				Playtomic.PlayerLevels.save(level, function(l, r) {
+					l = l || {};
+					test.assertTrue(section + "#1", "Request succeeded", r.success);
+					test.assertEquals(section + "#1", "No errorcode", r.errorcode, 0);
+					test.assertTrue(section + "#1", "Returned level is not null", l != null);
+					test.assertTrue(section + "#1", "Returned level has levelid", l.hasOwnProperty("levelid"));
+					test.assertEquals(section + "#1", "Level names match", level.name, l.name); 
+				
+					// duplicate fails
+					Playtomic.PlayerLevels.save(level, function(l, r) {
+						l = l || {};
+						test.assertTrue(section + "#2", "Request succeeded", r.success);
+						test.assertEquals(section + "#2", "Duplicate level errorcode", r.errorcode, 405);
+						done();
+					});
+				});
+			},
+		
+			list: function(done) {
+			
+				var section = "playerlevels.list";
+				console.log(section);
+								
+				var list = { 
+					page: 1,
+					perpage: 10,
+					data: false,
+					filters: {
+						rnd: rnd
+					}
+				};
+			
+				Playtomic.PlayerLevels.list(list, function(levels, numlevels, r) {
+					levels = levels || [];
+					numlevels = numlevels || -1;
+					test.assertTrue(section + "#1", "Request succeeded", r.success);
+					test.assertEquals(section + "#1", "No errorcode", r.errorcode, 0);
+					test.assertTrue(section + "#1", "Received levels", levels.length > 0);
+					test.assertTrue(section + "#1", "Received numlevels", numlevels >= levels.length);
+					
+					if(levels.length > 0) {
+						test.assertFalse(section + "#1", "First level has no data", levels[0].hasOwnProperty("data"));
+					} else {
+						test.assertTrue(section + "#2", "First level has data forced failure", 0 > 1);
+					}
+				
+					list.data = true;
+				
+					Playtomic.PlayerLevels.list(list, function(levels, numlevels, r) {
+						levels = levels || [];
+						numlevels = numlevels || -1;
+						test.assertTrue(section + "#2", "Request succeeded", r.success);
+						test.assertEquals(section + "#2", "No errorcode", r.errorcode, 0);
+						test.assertTrue(section + "#2", "Received levels", levels.length > 0);
+						test.assertTrue(section + "#2", "Received numlevels", numlevels >= levels.length);
+						
+						if(levels.length > 0) {
+							test.assertTrue(section + "#2", "First level has data", levels[0].hasOwnProperty("data"));
+						} else {
+							test.assertTrue(section + "#2", "First level has data forced failure", 0 > 1);
+						}
+						done();
+					});
+				});
+			},
+		
+			rate: function(done) {
+			
+				var section = "playerlevels.rate";
+				console.log(section);
+				
+				var level = {
+					name: "rate " + rnd,
+					playername: "ben" + rnd,
+					playerid: "0",
+					data: "this is the level data",
+					fields: {
+						rnd: rnd
+					}
+				}
+			
+				Playtomic.PlayerLevels.save(level, function(l, r) {
+				
+					l = l || {};
+					
+					test.assertTrue(section + "#1", "Request succeeded", r.success);
+					test.assertEquals(section + "#1", "No errorcode", r.errorcode, 0);
+					test.assertTrue(section + "#1", "Returned level is not null", l != null);
+					test.assertTrue(section + "#1", "Returned level has levelid", l.hasOwnProperty("levelid"));
+				
+					// rate fails because of an invalid rating
+					Playtomic.PlayerLevels.rate(l.levelid, 70, function(r) {
+						test.assertFalse(section + "#2", "Request failed", r.success);
+						test.assertEquals(section + "#2", "Invalid rating errorcode", r.errorcode, 401);
+
+						// rate succeeds
+						Playtomic.PlayerLevels.rate(l.levelid, 6, function(r) {
+							test.assertTrue(section + "#3", "Request succeeded", r.success);
+							test.assertEquals(section + "#3", "No errorcode", r.errorcode, 0);
+							
+							// rate fails because of already rated
+							Playtomic.PlayerLevels.rate(l.levelid, 7, function(r) {
+								test.assertFalse(section + "#4", "Request failed", r.success);
+								test.assertEquals(section + "#4", "Already rated errorcode", r.errorcode, 402);
+								done();
+							});
+
+						});
+
+					});
+				});
+			},
+		
+			load: function(done) {
+				var section = "playerlevels.load";
+				console.log(section);
+				
+				var level=  {
+					name: "sample loading level " + rnd,
+					playername: "ben" + rnd,
+					playerid: rnd.toString(),
+					data: "this is the level data",
+					fields: {
+						rnd: rnd
+					}
+				}
+			
+				Playtomic.PlayerLevels.save(level, function(l, r) {			
+					l = l || {};	
+					test.assertTrue(section + "#1", "Request succeeded", r.success);
+					test.assertEquals(section + "#1", "No errorcode", r.errorcode, 0);
+					test.assertTrue(section + "#1", "Name is correct", l.hasOwnProperty("levelid"));
+					test.assertEquals(section + "#1", "Name is correct", level.name, l.name);
+					test.assertEquals(section + "#1", "Data is correct", level.data, l.data);
+				
+					// now load
+					Playtomic.PlayerLevels.load(l.levelid, function(l, r) {
+						l = l || {};
+						test.assertTrue(section + "#2", "Request succeeded", r.success);
+						test.assertEquals(section + "#2", "No errorcode", r.errorcode, 0);
+						test.assertEquals(section + "#2", "Name is correct", level.name, l.name);
+						test.assertEquals(section + "#2", "Data is correct", level.data, l.data);
+						done();
+					});
+				});
+			}	
+		},
+		
+		leaderboards: {
+		
+			firstscore: function(done) {
+			
+				var section = "leaderboards.newscore";
+				console.log(section);
+								
+				var score = {
+					table: "scores" + rnd,
+					name: "person1",
+					points: 10000,
+					highest: true,
+					fields: { 
+						rnd: rnd
+					}
+				};
+			
+				Playtomic.Leaderboards.save(score, function(r) {
+				
+					test.assertTrue(section + "#1", "Request succeeded", r.success);
+					test.assertEquals(section + "#1", "No errorcode", r.errorcode, 0);
+				
+					// dupicate score gets rejected
+					score.points = 9000;
+				
+					Playtomic.Leaderboards.save(score, function(r) {
+					
+						test.assertTrue(section + "#2", "Request succeeded", r.success);
+						test.assertEquals(section + "#2", "Rejected duplicate score", r.errorcode, 209);
+					
+						// duplicate score gets allowed
+						score.allowduplicates = true;
+					
+						Playtomic.Leaderboards.save(score, function(r) {
+							test.assertTrue(section + "#3", "Request succeeded", r.success);
+							test.assertEquals(section + "#3", "No errorcode", r.errorcode, 0);
+							done();
+						});
+					});
+				});
+			},
+			
+			secondscore: function(done) {
+			
+				var section = "leaderboards.newscore2";
+				console.log(section);
+				
+				var score =  {
+					name: "person2",
+					table: "scores" + rnd,
+					points: 20000,
+					allowduplicates: true,
+					highest: true,
+					fields: {
+						rnd: rnd
+					}
+				};
+			
+				Playtomic.Leaderboards.save(score, function(r) {
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					done();
+				});
+			},
+		
+			highscores: function(done) {
+			
+				var section = "leaderboards.highscores";
+				console.log(section);
+				
+				var list = {
+					table: "scores" + rnd,
+					highest: true,
+					filters: {
+						rnd: rnd
+					}
+				}
+			
+				Playtomic.Leaderboards.list(list, function(scores, numscores, r) {
+					scores = scores || [];
+					numscores = numscores || -1;
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertTrue(section, "Received scores", scores.length > 0);
+					test.assertTrue(section, "Received numscores", numscores > 0);
+					if(scores.length > 1) {
+						test.assertTrue(section, "First score is less than second", scores[0].points > scores[1].points);
+					} else {
+						test.assertTrue(section, "First score is less than second forced failure", false);
+					}
+					done();
+				});
+			},
+			
+			lowscores: function(done) {
+			
+				var section = "leaderboards.lowscores";
+				console.log(section);
+				
+				var list = {
+					table: "scores" + rnd,
+					lowest: true,
+					perpage: 2,
+					filters: {
+						rnd: rnd
+					}
+				}
+			
+				Playtomic.Leaderboards.list(list, function(scores, numscores, r) {
+					scores = scores || [];
+					numscores = numscores || -1;
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertTrue(section, "Received scores", scores.length == 2);
+					test.assertTrue(section, "Received numscores", numscores > 0);
+				
+					if(scores.length > 1) {
+						test.assertTrue(section, "First score is less than second", scores[0].points < scores[1].points);
+					} else {
+						test.assertTrue(section, "First score is less than second forced failure", false);
+					}
+					done();
+				});
+			},
+			
+			allscores: function(done) {
+		
+				var section = "leaderboards.allscores";
+				console.log(section);
+				
+				var list = {
+					table: "scores" + rnd,
+					perpage: 2,
+					mode: "newest"
+				};
+		
+				Playtomic.Leaderboards.list(list, function(scores, numscores, r) {
+					scores = scores || [];
+					numscores = numscores || -1;
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertTrue(section, "Received scores", scores.length > 0);
+					test.assertTrue(section, "Received numscores", numscores > 0);
+			
+					if(scores.length > 1) {
+						test.assertTrue(section, "First score is newer or equal to second", scores[0].date >= scores[1].date);
+					} else {
+						test.assertTrue(section, "First score is newer or equal to second forced failure", false);
+					}
+
+					done();
+				});
+			}
+		}
+	}
+	
+	var test = {
+		
+		results: "",
+		failures: "",
+		successes: "",
+
+		assertEquals: function (section, name, expected, received) {
+			if (expected == received) {
+				test.record(true, section, name, expected, received);
+				return true;
+			}
+			
+			test.record(false, section, name, expected, received);
+			return false;
+		},
+	
+		assertTrue: function(section, name, value) {
+			return test.assertEquals(section, name, value, true);
+		},
+		
+		assertFalse: function(section, name, value) {
+			return test.assertEquals(section, name, value, false);
+		},
+		
+		record: function (success, section, message, expected, received) {
+			
+			var fontstart = "<font color='" + (success ? "#999999" : "#FF0000") + "'>";
+			var fontend = "</font><br />";
+			
+			if (!success) {
+				fontstart += "<b>";
+				fontend = "</b>" + fontend;
+			}
+			
+			var message = fontstart + "[" + section + "] " + message;
+			
+			if (success) {
+				message += fontend;
+				test.successes = message + test.successes;
+			} else {
+				message += " (" + expected + " vs " + received + ")" + fontend;
+				test.failures = message + test.failures;
+			}
+			
+			test.results = message + test.results;
+		},
+		
+		render: function() {
+			return 	"<span color='#CCCCCC'>--------------------------------      errors      --------------------------------</span><br />" + test.failures + 
+					"<span color='#CCCCCC'>--------------------------------     full log     --------------------------------</span><br />" + test.results;
+		}
+	}
+	
+
+	Playtomic.initialize("testpublickey", "testprivatekey", "http://127.0.0.1:3000/");
+	
+	var rnd = Math.floor(Math.random() * 1000000);
+	var testlist = [
+		tests.gamevars.all,
+		tests.gamevars.single,
+		tests.geoip.lookup,
+		tests.playerlevels.create,
+		tests.playerlevels.list,
+		tests.playerlevels.load,
+		tests.playerlevels.rate,
+		tests.leaderboards.firstscore,
+		tests.leaderboards.secondscore,
+		tests.leaderboards.highscores,
+		tests.leaderboards.lowscores,
+		tests.leaderboards.allscores
+	];
+	
+	function next() {
+		if(testlist.length == 0) {
+			return;
+		}
+	
+		document.getElementById("debug").innerHTML = test.render();
+		testlist.shift()(next);
+	}
+	
+	next();
+	</script>
+
+</body>
+</html>
