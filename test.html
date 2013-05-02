@@ -328,9 +328,9 @@
 					test.assertTrue(section, "Received scores", scores.length > 0);
 					test.assertTrue(section, "Received numscores", numscores > 0);
 					if(scores.length > 1) {
-						test.assertTrue(section, "First score is less than second", scores[0].points > scores[1].points);
+						test.assertTrue(section, "First score is greater than second", scores[0].points > scores[1].points);
 					} else {
-						test.assertTrue(section, "First score is less than second forced failure", false);
+						test.assertTrue(section, "First score is greater than second forced failure", false);
 					}
 					done();
 				});
