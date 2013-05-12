@@ -271,14 +271,24 @@
 					
 						test.assertTrue(section + "#2", "Request succeeded", r.success);
 						test.assertEquals(section + "#2", "Rejected duplicate score", r.errorcode, 209);
-					
-						// duplicate score gets allowed
-						score.allowduplicates = true;
-					
+						
+						// better score gets accepted
+						score.points = 11000;
+						
 						Playtomic.Leaderboards.save(score, function(r) {
-							test.assertTrue(section + "#3", "Request succeeded", r.success);
-							test.assertEquals(section + "#3", "No errorcode", r.errorcode, 0);
-							done();
+						
+							test.assertTrue(section + "#1", "Request succeeded", r.success);
+							test.assertEquals(section + "#1", "No errorcode", r.errorcode, 0);
+				
+							// duplicate score gets allowed
+							score.allowduplicates = true;
+							score.points = 9000;
+					
+							Playtomic.Leaderboards.save(score, function(r) {
+								test.assertTrue(section + "#3", "Request succeeded", r.success);
+								test.assertEquals(section + "#3", "No errorcode", r.errorcode, 0);
+								done();
+							});
 						});
 					});
 				});
