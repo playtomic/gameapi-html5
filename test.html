@@ -404,6 +404,133 @@
 
 					done();
 				});
+			},
+			
+			
+			friendsscores: function(done) {
+			
+				var section = "leaderboards.friendsscores";
+				var playerids = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+				var points = 0;
+			
+				function nextPlayerId()
+				{			
+					points += 1000;
+					var playerid = playerids.shift();
+				
+					var score = {
+						name: "playerid" + playerid,
+						playerid: playerid,
+						table: "friends" + rnd,
+						points: points,
+						highest: true,
+						fields: {
+							rnd: rnd
+						}
+					};
+				
+					Playtomic.Leaderboards.save(score, function(r) {
+						if(playerids.length > 0)
+						{
+							nextPlayerId();
+						} 
+						else 
+						{
+							var list = {
+								table: "friends" + rnd,
+								perpage: 3,
+								friendslist: ["1", "2", "3"]
+							};
+						
+							Playtomic.Leaderboards.list(list, function(scores, numscores, r) {
+								scores = scores || [];
+								numscores = numscores || -1;
+							
+								test.assertTrue(section, "Request succeeded", r.success);
+								test.assertEquals(section, "No errorcode", r.errorcode, 0);
+								test.assertTrue(section, "Received 3 scores", scores.length == 3);
+								test.assertTrue(section, "Received numscores 3", numscores == 3);
+								test.assertTrue(section, "Player id #1", scores[0].playerid == "3");
+								test.assertTrue(section, "Player id #2", scores[1].playerid == "2");
+								test.assertTrue(section, "Player id #3", scores[2].playerid == "1");
+								done();
+							});
+						}
+					});
+				}
+			
+				nextPlayerId();
+			},
+			
+			ownscores: function(done) {
+			
+				var section = "leaderboards.ownscores";
+				var points = 0;
+				var saved = 0;
+			
+				function nextPlayerId()
+				{			
+					points += 1000;
+					saved++;
+				
+					var score =  {
+						name: "test account",
+						playerid: "test@testuri.com",
+						table: "personal" + rnd,
+						points: points,
+						highest: true,
+						allowduplicates: true,
+						fields: {
+							rnd: rnd
+						}
+					};
+				
+					Playtomic.Leaderboards.save(score, function(r) {
+						if(saved < 9)
+						{
+							nextPlayerId();
+						} 
+						else 
+						{
+							var finalscore =  {
+								name: "test account",
+								playerid: "test@testuri.com",
+								table: "personal" + rnd,
+								points: 3000,
+								highest: true,
+								allowduplicates: true,
+								fields: {
+									rnd: rnd
+								},
+								perpage: 5
+							};
+						
+							Playtomic.Leaderboards.saveAndList(finalscore, function(scores, numscores, r) {
+								
+								scores = scores || [];
+								numscores = numscores || -1;
+							
+								test.assertTrue(section, "Request succeeded", r.success);
+								test.assertEquals(section, "No errorcode", r.errorcode, 0);
+								test.assertTrue(section, "Received 5 scores", scores.length == 5);
+								test.assertTrue(section, "Received numscores 10", numscores == 10);
+								test.assertTrue(section, "Score 1 ranked 6", scores[0].rank == 6);
+								test.assertTrue(section, "Score 2 ranked 7", scores[1].rank == 7);
+								test.assertTrue(section, "Score 3 ranked 8", scores[2].rank == 8);
+								test.assertTrue(section, "Score 4 ranked 9", scores[3].rank == 9);
+								test.assertTrue(section, "Score 5 ranked 10", scores[4].rank == 10);
+								test.assertTrue(section, "Score 1 points", scores[0].points == 4000);
+								test.assertTrue(section, "Score 2 points", scores[1].points == 3000);
+								test.assertTrue(section, "Score 3 points", scores[2].points == 3000);
+								test.assertTrue(section, "Score 4 points", scores[3].points == 2000);
+								test.assertTrue(section, "Score 5 points", scores[4].points == 1000);
+								done();
+							});
+						}
+					});
+				}
+			
+				nextPlayerId();
 			}
 		}
 	}
@@ -477,7 +604,9 @@
 		tests.leaderboards.secondscore,
 		tests.leaderboards.highscores,
 		tests.leaderboards.lowscores,
-		tests.leaderboards.allscores
+		tests.leaderboards.allscores,
+		tests.leaderboards.friendsscores,
+		tests.leaderboards.ownscores
 	];
 	
 	function next() {
