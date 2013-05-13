@@ -4,9 +4,7 @@ var Playtomic = {};
 {
 	var APIURL,
 		PUBLICKEY,
-		PRIVATEKEY,
-		SECTIONS = {},
-		ACTIONS = {};
+		PRIVATEKEY;
   
 	/**
 	 * Initializes the API without sending a View.  This is for page-based sites and applications without a single persistant page
@@ -23,31 +21,17 @@ var Playtomic = {};
 		APIURL = apiurl + "v1?publickey=" + publickey;
 		PRIVATEKEY = privatekey;
 		PUBLICKEY = publickey;
-		
-		// section & actions
-		SECTIONS = {
-			"gamevars": "gamevars",
-			"geoip": "geoip",
-			"leaderboards": "leaderboards",
-			"playerlevels": "playerlevels"					
-		};
-		ACTIONS = {
-			"gamevars-load": "load",
-			"gamevars-loadsingle": "single",
-			"geoip-lookup": "lookup",
-			"leaderboards-list": "list",
-			"leaderboards-save": "save",
-			"leaderboards-saveandlist": "saveandlist",
-			"playerlevels-save": "save",
-			"playerlevels-load": "load",
-			"playerlevels-list": "list",
-			"playerlevels-rate": "rate",
-		};
 	};
 				
 		
 	// level sharing
-	(function() {		
+	(function() {	
+		var SECTION = "playerlevels";
+		var SAVE = "save";
+		var LOAD = "load";
+		var RATE = "rate";
+		var LIST = "list";
+			
 		Playtomic.PlayerLevels = {		
 			POPULAR: "popular",
 			NEWEST: "newest",
@@ -58,7 +42,7 @@ var Playtomic = {};
 			 * @param	callback		Your function to receive the response:  function(level, response)
 			 */		
 			save: function(level, callback) {		
-				sendAPIRequest(SECTIONS["playerlevels"], ACTIONS["playerlevels-save"], saveLoadComplete, callback, level);
+				sendAPIRequest(SECTION, SAVE, saveLoadComplete, callback, level);
 			},				
 			
 			/**
@@ -67,7 +51,7 @@ var Playtomic = {};
 			 * @param	callback		Your function to receive the response:  function(level, response)
 			 */
 			load: function(levelid, callback) {	
-				sendAPIRequest(SECTIONS["playerlevels"], ACTIONS["playerlevels-load"], saveLoadComplete, callback, { levelid: levelid });
+				sendAPIRequest(SECTION, LOAD, saveLoadComplete, callback, { levelid: levelid });
 			},
 	
 			/**
@@ -76,7 +60,7 @@ var Playtomic = {};
 			 * @param	callback		Your function to receive the response:  function(levels, numlevels, response)
 			 */
 			list: function(options, callback) {
-				sendAPIRequest(SECTIONS["playerlevels"], ACTIONS["playerlevels-list"], listComplete, callback, options);
+				sendAPIRequest(SECTION, LIST, listComplete, callback, options);
 			},
 			
 			/**
@@ -86,7 +70,7 @@ var Playtomic = {};
 			 * @param	callback		Your function to receive the response:  function(response)
 			 */
 			rate: function(levelid, rating, callback) {
-				sendAPIRequest(SECTIONS["playerlevels"], ACTIONS["playerlevels-rate"], rateComplete, callback, { levelid: levelid, rating: rating });
+				sendAPIRequest(SECTION, RATE, rateComplete, callback, { levelid: levelid, rating: rating });
 			}
 		};
 		
@@ -127,7 +111,13 @@ var Playtomic = {};
 	
 	// leaderboards
 	(function() {
+		var SECTION = "leaderboards";
+		var SAVE = "save";
+		var LIST = "list";
+		var SAVEANDLIST = "saveandlist";
+		
 		Playtomic.Leaderboards = {
+			
 			TODAY: "today",
 			LAST7DAYS: "last7days",
 			LAST30DAYS: "last30days",
@@ -141,7 +131,7 @@ var Playtomic = {};
 
 			 */		
 			list: function(options, callback) {		
-				sendAPIRequest(SECTIONS["leaderboards"], ACTIONS["leaderboards-list"], listComplete, callback, options);		
+				sendAPIRequest(SECTION, LIST, listComplete, callback, options);		
 			},
 			
 			/**
@@ -150,7 +140,7 @@ var Playtomic = {};
 			 * @param	callback	Callback function to receive the data:  function(response)
 			 */		
 			save: function(score, callback) {
-				sendAPIRequest(SECTIONS["leaderboards"], ACTIONS["leaderboards-save"], saveComplete, callback, score);
+				sendAPIRequest(SECTION, SAVE, saveComplete, callback, score);
 			},
 			
 			/**
@@ -159,7 +149,7 @@ var Playtomic = {};
 			 * @param	callback	Callback function to receive the data:  function(scores, numscores, response)
 			 */
 			saveAndList: function(score, callback) {
-				sendAPIRequest(SECTIONS["leaderboards"], ACTIONS["leaerboards-saveandlist"], listComplete, callback, postdata);
+				sendAPIRequest(SECTION, SAVEANDLIST, listComplete, callback, score);
 			}
 		};	
 		
@@ -193,15 +183,18 @@ var Playtomic = {};
 	}());
 	
 	// geoip
-	(new function()
+	(function()
 	{
+		var SECTION = "geoip";
+		var LOOKUP = "lookup";
+		
 		Playtomic.GeoIP = {
 			/**
 			 * Performs a country lookup on the player IP address
 			 * @param	callback	Your function to receive the data:  callback(data, response);
 			 */			
 			lookup: function(callback) {		
-				sendAPIRequest(SECTIONS["geoip"], ACTIONS["geoip-lookup"], lookupComplete, callback, null);
+				sendAPIRequest(SECTION, LOOKUP, lookupComplete, callback, null);
 			}
 		};
 		
@@ -229,14 +222,19 @@ var Playtomic = {};
 	}());
 	
 	// gamevars
-	(new function() {	
+	(function() {	
+		
+		var SECTION = "gamevars";
+		var LOAD = "load";
+		var LOADSINGLE = "single";
+		
 		Playtomic.GameVars = {
 			/**
 			 * Loads your GameVars 
 			 * @param	callback	Your function to receive the data:  callback(gamevars, response);
 			 */		
 			load: function(callback) {		
-				sendAPIRequest(SECTIONS["gamevars"], ACTIONS["gamevars-load"], loadComplete, callback);
+				sendAPIRequest(SECTION, LOAD, loadComplete, callback);
 			},
 			
 			/**
@@ -245,7 +243,7 @@ var Playtomic = {};
 			 * @param callback	Your function receive the data:  callback(gamevars, response);
 			 */
 			loadSingle: function(name, callback) {
-				sendAPIRequest(SECTIONS["gamevars"], ACTIONS["gamevars-loadsingle"], loadComplete, callback, { name: name });
+				sendAPIRequest(SECTION, LOADSINGLE, loadComplete, callback, { name: name });
 			}
 		};
 		
