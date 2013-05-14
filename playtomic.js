@@ -303,27 +303,25 @@ var Playtomic = {};
 	// Responses
 	var ERRORS = {
 		// General Errors
-		"0": "No error",
 		"1": "General error, this typically means the player is unable to connect to the server",
-		"2": "Invalid game credentials. Make sure you use your public and private keys.",
+		"2": "Invalid game credentials. Make sure you use the rihgt public and private keys.",
 		"3": "Request timed out.",
 		"4": "Invalid request.",
 		
 		// GeoIP Errors
-		"100": "GeoIP API has been disabled. This may occur if your game is faulty or overwhelming the Playtomic servers.",
+		"100": "GeoIP API has been disabled for this game.",
 		
 		// Leaderboard Errors
-		"200": "Leaderboard API has been disabled. This may occur if your game is faulty or overwhelming the Playtomic servers.",
-		"201": "The source URL or name weren't provided when saving a score. Make sure the player specifies a name and the game is initialized before anything else using the code in the `Set your game up` section.",
-		"202": "Invalid auth key. You should not see this normally, players might if they tamper with your game.",
-		"203": "Player is banned from submitting scores in your game.",
-		"204": "Score was not the player's best score.  You can notify the player, highlight their best score via score.SubmittedOrBest, or circumvent this by specifying 'allowduplicates' to be true in your save options.",
+		"200": "Leaderboard API has been disabled for this game.",
+		"201": "The player's name wasn't provided.",
+		"203": "Player is banned from submitting scores in this game.",
+		"204": "Score was not saved because it was not the player's best.  You can allow players to have	more than one score by specifying allowduplicates=true in your save options.",
 
 		// GameVars Errors
-		"300": "GameVars API has been disabled. This may occur if your game is faulty or overwhelming the Playtomic servers.",
+		"300": "GameVars API has been disabled for this game.",
 		
 		// LevelSharing Errors
-		"400": "Level sharing API has been disabled. This may occur if your game is faulty or overwhelming the Playtomic servers.",
+		"400": "Level sharing API has been disabled for this game.",
 		"401": "Invalid rating value (must be 1 - 10).",
 		"402": "Player has already rated that level.",
 		"403": "Missing level name.",
