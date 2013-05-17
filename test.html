@@ -244,7 +244,7 @@
 		
 		leaderboards: {
 		
-			firstscore: function(done) {
+			firstScore: function(done) {
 			
 				var section = "leaderboards.newscore";
 				console.log(section);
@@ -294,7 +294,7 @@
 				});
 			},
 			
-			secondscore: function(done) {
+			secondScore: function(done) {
 			
 				var section = "leaderboards.newscore2";
 				console.log(section);
@@ -317,7 +317,7 @@
 				});
 			},
 		
-			highscores: function(done) {
+			highScores: function(done) {
 			
 				var section = "leaderboards.highscores";
 				console.log(section);
@@ -346,7 +346,7 @@
 				});
 			},
 			
-			lowscores: function(done) {
+			lowScores: function(done) {
 			
 				var section = "leaderboards.lowscores";
 				console.log(section);
@@ -377,7 +377,7 @@
 				});
 			},
 			
-			allscores: function(done) {
+			allScores: function(done) {
 		
 				var section = "leaderboards.allscores";
 				console.log(section);
@@ -407,7 +407,7 @@
 			},
 			
 			
-			friendsscores: function(done) {
+			friendsScores: function(done) {
 			
 				var section = "leaderboards.friendsscores";
 				var playerids = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
@@ -462,7 +462,7 @@
 				nextPlayerId();
 			},
 			
-			ownscores: function(done) {
+			ownScores: function(done) {
 			
 				var section = "leaderboards.ownscores";
 				var points = 0;
@@ -532,6 +532,274 @@
 			
 				nextPlayerId();
 			}
+		},
+		
+		achievements: { 
+			
+			list: function(done) {
+				
+				var section = "achievements.list";
+				console.log(section);
+				
+				var achievements = [
+					{ fields: { rnd: rnd}, publickey: "testpublickey", achievement: "Super Mega Achievement #1", achievementkey: "secretkey", playerid: "1", playername: "ben" }, 
+					{ fields: { rnd: rnd}, publickey: "testpublickey", achievement: "Super Mega Achievement #1", achievementkey: "secretkey", playerid: "2", playername: "michelle" }, 
+					{ fields: { rnd: rnd}, publickey: "testpublickey", achievement: "Super Mega Achievement #1", achievementkey: "secretkey", playerid: "3", playername: "peter" },
+					{ fields: { rnd: rnd}, publickey: "testpublickey", achievement: "Super Mega Achievement #2", achievementkey: "secretkey2", playerid: "3", playername: "peter" }, 
+					{ fields: { rnd: rnd}, publickey: "testpublickey", achievement: "Super Mega Achievement #2", achievementkey: "secretkey2", playerid: "2", playername: "michelle" }
+				];
+				
+				function s() {
+				
+					if(achievements.length > 0) {
+						Playtomic.Achievements.save(achievements.shift(), function(r) {
+							test.assertTrue(section, "Request succeeded (" + (5 - achievements.length) + ")", r.success);
+							test.assertEquals(section, "No errorcode (" + (5 - achievements.length) + ")", r.errorcode, 0);
+							setTimeout(s, 2000);
+						});
+						
+						return;
+					} 
+					
+					var options = {
+						publickey: "testpublickey",
+						filters: { rnd: rnd }
+					};
+
+					Playtomic.Achievements.list(options, function(achievements, r) {
+						console.log(JSON.stringify(achievements));
+						test.assertTrue(section, "Request succeeded", r.success);
+						test.assertEquals(section, "No errorcode", r.errorcode, 0);
+						test.assertEquals(section, "Achievement 1 is correct", achievements[0].achievement, "Super Mega Achievement #1");
+						test.assertEquals(section, "Achievement 2 is correct", achievements[1].achievement, "Super Mega Achievement #2");
+						test.assertEquals(section, "Achievement 3 is correct", achievements[2].achievement, "Super Mega Achievement #3");
+						done();
+					});
+				}
+				
+				s();
+			},
+			
+			listWithFriends: function(done) {
+				
+				var section = "achievements.listwithfriends";
+				console.log(section);
+								
+				var options = {
+					publickey: "testpublickey",
+					friendslist: ["1", "2", "3"],
+					filters: { rnd: rnd }
+				};
+
+				Playtomic.Achievements.list(options, function(achievements, r) {
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertEquals(section, "Achievement 1 is correct", achievements[0].achievement, "Super Mega Achievement #1");
+					test.assertEquals(section, "Achievement 2 is correct", achievements[1].achievement, "Super Mega Achievement #2");
+					test.assertEquals(section, "Achievement 3 is correct", achievements[2].achievement, "Super Mega Achievement #3");
+					test.assertTrue(section, "Achievement 1 has friends", achievements[0].hasOwnProperty("friends"));
+					test.assertTrue(section, "Achievement 2 has friends", achievements[1].hasOwnProperty("friends"));
+					test.assertFalse(section, "Achievement 3 has no friends", achievements[2].hasOwnProperty("friends"));
+					test.assertTrue(section, "Achievement 1 has 3 friends", achievements[0].friends.length == 3);
+					test.assertTrue(section, "Achievement 1 friend 1", achievements[0].friends[0].playername == "ben");
+					test.assertTrue(section, "Achievement 1 friend 2", achievements[0].friends[1].playername == "michelle");
+					test.assertTrue(section, "Achievement 1 friend 3", achievements[0].friends[2].playername == "peter");
+					test.assertTrue(section, "Achievement 2 has 2 friend", achievements[1].friends.length == 2);
+					test.assertTrue(section, "Achievement 2 friend 1", achievements[1].friends[0].playername == "michelle");
+					test.assertTrue(section, "Achievement 2 friend 2", achievements[1].friends[1].playername == "peter");
+					done();
+				});
+			},
+			
+			listWithPlayer: function(done) {
+				var section = "achievements.listwithplayer";
+				console.log(section);
+								
+				var options = {
+					publickey: "testpublickey",
+					playerid: "1",
+					filters: { rnd: rnd }
+				};
+
+				Playtomic.Achievements.list(options, function(achievements, r) {
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertEquals(section, "Achievement 1 is correct", achievements[0].achievement, "Super Mega Achievement #1");
+					test.assertEquals(section, "Achievement 2 is correct", achievements[1].achievement, "Super Mega Achievement #2");
+					test.assertEquals(section, "Achievement 3 is correct", achievements[2].achievement, "Super Mega Achievement #3");
+					test.assertFalse(section, "Achievement 1 has no friends", achievements[0].hasOwnProperty("friends"));
+					test.assertFalse(section, "Achievement 2 has no friends", achievements[1].hasOwnProperty("friends"));
+					test.assertFalse(section, "Achievement 3 has no friends", achievements[2].hasOwnProperty("friends"));
+					test.assertTrue(section, "Achievement 1 has does have player", achievements[0].hasOwnProperty("player"));
+					test.assertFalse(section, "Achievement 2 has no player", achievements[1].hasOwnProperty("player"));
+					test.assertFalse(section, "Achievement 3 has no player", achievements[2].hasOwnProperty("player"));
+					test.assertTrue(section, "Achievement 1 player is ben", achievements[0].player.playername == "ben");
+					done();
+				});
+			},
+			
+			listWithPlayerAndFriends: function(done) {
+				var section = "achievements.listwithplayerandfriends";
+				console.log(section);
+								
+				var options = {
+					publickey: "testpublickey",
+					playerid: "1", 
+					friendslist: ["2", "3"],
+					filters: { rnd: rnd }
+				};
+
+				Playtomic.Achievements.list(options, function(achievements, r) {
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertEquals(section, "Achievement 1 is correct", achievements[0].achievement, "Super Mega Achievement #1");
+					test.assertEquals(section, "Achievement 2 is correct", achievements[1].achievement, "Super Mega Achievement #2");
+					test.assertEquals(section, "Achievement 3 is correct", achievements[2].achievement, "Super Mega Achievement #3");
+					test.assertTrue(section, "Achievement 1 has player", achievements[0].hasOwnProperty("player"));			
+					test.assertTrue(section, "Achievement 1 has friends", achievements[0].hasOwnProperty("friends"));
+					test.assertTrue(section, "Achievement 2 has friends", achievements[1].hasOwnProperty("friends"));
+					test.assertFalse(section, "Achievement 2 has no player", achievements[1].hasOwnProperty("player"));
+					test.assertFalse(section, "Achievement 3 has no friends", achievements[2].hasOwnProperty("friends"));
+					test.assertFalse(section, "Achievement 3 has no player", achievements[2].hasOwnProperty("player"));
+					test.assertTrue(section, "Achievement 1 player", achievements[0].player.playername == "ben");
+					test.assertTrue(section, "Achievement 1 has 2 friend", achievements[0].friends.length == 2);
+					test.assertTrue(section, "Achievement 1 friend 2", achievements[0].friends[0].playername == "michelle");
+					test.assertTrue(section, "Achievement 1 friend 3", achievements[0].friends[1].playername == "peter");
+					test.assertTrue(section, "Achievement 2 has 2 friend", achievements[1].friends.length == 2);
+					test.assertTrue(section, "Achievement 2 friend 1", achievements[1].friends[0].playername == "michelle");
+					test.assertTrue(section, "Achievement 2 friend 2", achievements[1].friends[1].playername == "peter");
+					done();
+				});
+			},
+			
+			stream: function(done) {
+				var section = "achievements.stream";
+				console.log(section);
+								
+				var options = {
+					publickey: "testpublickey",
+					filters: { rnd: rnd }
+				};
+
+				Playtomic.Achievements.stream(options, function(achievements, numachievements, r) {
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertTrue(section, "5 achievements returned", achievements.length == 5);
+					test.assertTrue(section, "5 achievements in total", numachievements == 5);
+					test.assertTrue(section, "Achievement 5 person", achievements[0].playername == "michelle");
+					test.assertTrue(section, "Achievement 5 achievement", achievements[0].awarded.achievement == "Super Mega Achievement #2");
+					test.assertTrue(section, "Achievement 4 person", achievements[1].playername == "peter");
+					test.assertTrue(section, "Achievement 4 achievement", achievements[1].awarded.achievement == "Super Mega Achievement #2");
+					test.assertTrue(section, "Achievement 3 person", achievements[2].playername == "peter");
+					test.assertTrue(section, "Achievement 3 achievement", achievements[2].awarded.achievement == "Super Mega Achievement #1");
+					test.assertTrue(section, "Achievement 2 person", achievements[3].playername == "michelle");
+					test.assertTrue(section, "Achievement 2 achievement", achievements[3].awarded.achievement == "Super Mega Achievement #1");					
+					test.assertTrue(section, "Achievement 1 person", achievements[4].playername == "ben");
+					test.assertTrue(section, "Achievement 1 achievement", achievements[4].awarded.achievement == "Super Mega Achievement #1");
+
+					done();
+				});
+			},
+			
+			streamWithFriends: function(done) {
+				var section = "achievements.streamwithfriends";
+				console.log(section);
+								
+				var options = {
+					publickey: "testpublickey",
+					group: true,
+					friendslist: ["2", "3"],
+					filters: { rnd: rnd }
+				};
+
+				Playtomic.Achievements.stream(options, function(achievements, numachievements, r) {
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertTrue(section, "5 achievements returned", achievements.length == 2);
+					test.assertTrue(section, "5 achievements in total", numachievements == 2);
+					test.assertTrue(section, "Achievement 1 awards", achievements[0].awards == 2);
+					test.assertTrue(section, "Achievement 1 achievement", achievements[0].awarded.achievement == "Super Mega Achievement #2");
+					test.assertTrue(section, "Achievement 1 person", achievements[0].playername == "michelle");
+					test.assertTrue(section, "Achievement 2 awards", achievements[1].awards == 2);
+					test.assertTrue(section, "Achievement 2 achievement", achievements[1].awarded.achievement == "Super Mega Achievement #2");
+					test.assertTrue(section, "Achievement 2 person", achievements[1].playername == "peter");					
+					done();
+				});
+			},
+			
+			streamWithPlayerAndFriends: function(done) {
+				var section = "achievements.streamwithplayerandfriends";
+				console.log(section);
+								
+				var options = {
+					publickey: "testpublickey",
+					group: true,
+					playerid: "1",
+					friendslist: ["2", "3"],
+					filters: { rnd: rnd }
+				};
+
+				Playtomic.Achievements.stream(options, function(achievements, numachievements, r) {
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertTrue(section, "5 achievements returned", achievements.length == 3);
+					test.assertTrue(section, "5 achievements in total", numachievements == 3);
+					test.assertTrue(section, "Achievement 1 person", achievements[0].playername == "michelle");
+					test.assertTrue(section, "Achievement 1 awards", achievements[0].awards == 2);
+					test.assertTrue(section, "Achievement 1 achievement", achievements[0].awarded.achievement == "Super Mega Achievement #2");
+					test.assertTrue(section, "Achievement 2 person", achievements[1].playername == "peter");
+					test.assertTrue(section, "Achievement 2 awards", achievements[1].awards == 2);
+					test.assertTrue(section, "Achievement 2 achievement", achievements[1].awarded.achievement == "Super Mega Achievement #2");
+					test.assertTrue(section, "Achievement 3 person", achievements[2].playername == "ben");
+					test.assertTrue(section, "Achievement 3 awards", achievements[2].awards == 1);
+					test.assertTrue(section, "Achievement 3 achievement", achievements[2].awarded.achievement == "Super Mega Achievement #1");
+					done();
+				});
+			},
+			
+			save: function(done) {
+				
+				var section = "achievements.save";
+				console.log(section);
+				
+				var achievement = {
+					publickey: "testpublickey",
+					achievement: "Super Mega Achievement #1",
+					achievementkey: "secretkey",
+					playerid: "1",
+					playername: "ben",
+					fields: { rnd: rnd }
+				};
+
+				Playtomic.Achievements.save(achievement, function(r) {
+					test.assertTrue(section, "Request succeeded", r.success);
+					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+
+					// second save gets rejected
+					Playtomic.Achievements.save(achievement, function(r2) {
+						test.assertFalse(section, "Request failed", r2.success);
+						test.assertEquals(section, "Already had achievement errorcode", r2.errorcode, 506);
+						
+						// third save overwrites the first
+						achievement.overwrite = true;
+						
+						Playtomic.Achievements.save(achievement, function(r3) {
+							test.assertTrue(section, "Request succeeded", r3.success);
+							test.assertEquals(section, "Already had achievement errorcode", r3.errorcode, 506);
+							
+							// fourth saves with allow duplicates
+							achievement.allowduplicates = true;
+							delete achievement.overwrite;
+							
+							Playtomic.Achievements.save(achievement, function(r3) {
+								test.assertTrue(section, "Request succeeded", r3.success);
+								test.assertEquals(section, "Already had achievement errorcode", r3.errorcode, 506);
+								done();
+							});
+						});
+					});
+				});
+			}
 		}
 	}
 	
@@ -600,13 +868,21 @@
 		tests.playerlevels.list,
 		tests.playerlevels.load,
 		tests.playerlevels.rate,
-		tests.leaderboards.firstscore,
-		tests.leaderboards.secondscore,
-		tests.leaderboards.highscores,
-		tests.leaderboards.lowscores,
-		tests.leaderboards.allscores,
-		tests.leaderboards.friendsscores,
-		tests.leaderboards.ownscores
+		tests.leaderboards.firstScore,
+		tests.leaderboards.secondScore,
+		tests.leaderboards.highScores,
+		tests.leaderboards.lowScores,
+		tests.leaderboards.allScores,
+		tests.leaderboards.friendsScores,
+		tests.leaderboards.ownScores,
+		tests.achievements.list,
+		tests.achievements.listWithFriends,
+		tests.achievements.listWithPlayer,
+		tests.achievements.listWithPlayerAndFriends,
+		tests.achievements.stream,
+		tests.achievements.streamWithFriends,
+		tests.achievements.streamWithPlayerAndFriends,
+		tests.achievements.save
 	];
 	
 	function next() {

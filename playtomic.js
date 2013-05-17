@@ -22,6 +22,85 @@ var Playtomic = {};
 		PRIVATEKEY = privatekey;
 		PUBLICKEY = publickey;
 	};
+	
+	// achievements
+	(function() {
+	
+		var SECTION = "achievements";
+		var LIST = "list";
+		var STREAM = "stream";
+		var SAVE = "save";
+		
+		Playtomic.Achievements = {
+		
+			/**
+			 * Lists all achievements
+			 * @param	options		The list options
+			 * @param	callback	Your function to receive the response: function(achievements, response)
+			 */
+			list: function(options, callback) {
+				sendAPIRequest(SECTION, LIST, listComplete, callback, options);
+			},
+
+			/**
+			 * Shows a chronological stream of achievements 
+			 * @param	options		List options
+			 * @param	callback	Your function to receive the response: function(achievements, response)
+			 */ 
+			 stream: function(options, callback) {
+				 sendAPIRequest(SECTION, STREAM, streamComplete, callback, options);
+			},
+
+			/**
+			 * Award an achievement to a player
+			 * @param	achievement	The achievement
+			 * @param	callback	Your function to receive the response: function(response)
+			 */
+			save: function(achievement, callback) {
+				sendAPIRequest(SECTION, SAVE, saveComplete, callback, achievement);
+			}
+		}
+			
+		/**
+		 * Processes the response received from the server, returns the data and response to the user's callback
+		 * @param	callback	The user's callback function
+		 * @param	postdata	The data that was posted
+		 * @param	data		The object returned from the server
+		 * @param	response	The response from the server
+		 */
+		function saveComplete(callback, postdata, data, response) {
+			if(callback == null)
+				return;
+		
+			callback(response);
+		}
+
+		function listComplete(callback, postdata, data, response) {
+			if(callback == null) {
+				return;
+			}
+		
+			if(!response.success) {
+				callback([], response);
+				return;
+			}
+
+			callback(data.achievements, response);
+		};
+	
+		function streamComplete(callback, postdata, data, response) {
+			if(callback == null)
+				return;
+
+			if(!response.success) {
+				callback([], response);
+				return;
+			}
+
+			callback(data.achievements, data.numachievements, response);
+		};
+	
+	}());
 				
 		
 	// level sharing
@@ -326,7 +405,16 @@ var Playtomic = {};
 		"402": "Player has already rated that level.",
 		"403": "Missing level name.",
 		"404": "Missing level id.",
-		"405": "Level already exists."
+		"405": "Level already exists.",
+		
+		// Achievement errors
+		"500": "Achievements API has been disabled for this game.",
+		"501": "Missing playerid",
+		"502": "Missing player name",
+		"503": "Missing achievementid",
+		"504": "Invalid achievementid or achievement key",
+		"505": "Player already had the achievement.  You can overwrite old achievements with overwrite=true or save each time the player is awarded with allowduplicates=true",
+		"506": "Player already had the achievement and it was overwritten or a duplicate was saved successfully"
 	};
 
 	function Response(success, errorcode) {
