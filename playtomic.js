@@ -409,12 +409,12 @@ var Playtomic = {};
 		
 		// Achievement errors
 		"500": "Achievements API has been disabled for this game.",
-		"501": "Missing playerid",
-		"502": "Missing player name",
-		"503": "Missing achievementid",
-		"504": "Invalid achievementid or achievement key",
-		"505": "Player already had the achievement.  You can overwrite old achievements with overwrite=true or save each time the player is awarded with allowduplicates=true",
-		"506": "Player already had the achievement and it was overwritten or a duplicate was saved successfully"
+		"501": "Missing playerid.",
+		"502": "Missing player name.",
+		"503": "Missing achievementid.",
+		"504": "Invalid achievementid or achievement key.",
+		"505": "Player already had the achievement.  You can overwrite old achievements with overwrite=true or save each time the player is awarded with allowduplicates=true.",
+		"506": "Player already had the achievement and it was overwritten or a duplicate was saved successfully."
 	};
 
 	function Response(success, errorcode) {
