@@ -567,7 +567,6 @@
 					};
 
 					Playtomic.Achievements.list(options, function(achievements, r) {
-						console.log(JSON.stringify(achievements));
 						test.assertTrue(section, "Request succeeded", r.success);
 						test.assertEquals(section, "No errorcode", r.errorcode, 0);
 						test.assertEquals(section, "Achievement 1 is correct", achievements[0].achievement, "Super Mega Achievement #1");
