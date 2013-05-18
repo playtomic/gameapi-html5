@@ -44,7 +44,7 @@ var Playtomic = {};
 
 			/**
 			 * Shows a chronological stream of achievements 
-			 * @param	options		List options
+			 * @param	options		The stream options
 			 * @param	callback	Your function to receive the response: function(achievements, response)
 			 */ 
 			 stream: function(options, callback) {
@@ -86,7 +86,7 @@ var Playtomic = {};
 			}
 
 			callback(data.achievements, response);
-		};
+		}
 	
 		function streamComplete(callback, postdata, data, response) {
 			if(callback == null)
@@ -98,7 +98,7 @@ var Playtomic = {};
 			}
 
 			callback(data.achievements, data.numachievements, response);
-		};
+		}
 	
 	}());
 				
