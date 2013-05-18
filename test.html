@@ -765,34 +765,42 @@
 					publickey: "testpublickey",
 					achievement: "Super Mega Achievement #1",
 					achievementkey: "secretkey",
-					playerid: "1",
-					playername: "ben",
+					playerid: rnd.toString(),
+					playername: "a random name " + rnd,
 					fields: { rnd: rnd }
 				};
+				
+				console.log(section + " -> saving 1");
 
 				Playtomic.Achievements.save(achievement, function(r) {
-					test.assertTrue(section, "Request succeeded", r.success);
-					test.assertEquals(section, "No errorcode", r.errorcode, 0);
+					test.assertTrue(section + "#1", "Request succeeded", r.success);
+					test.assertEquals(section + "#1", "No errorcode", r.errorcode, 0);
+					
+					console.log(section + " -> saving 2");
 
 					// second save gets rejected
 					Playtomic.Achievements.save(achievement, function(r2) {
-						test.assertFalse(section, "Request failed", r2.success);
-						test.assertEquals(section, "Already had achievement errorcode", r2.errorcode, 506);
+						test.assertFalse(section + "#2", "Request failed", r2.success);
+						test.assertEquals(section + "#2", "Already had achievement errorcode", r2.errorcode, 506);
 						
 						// third save overwrites the first
 						achievement.overwrite = true;
 						
+						console.log(section + " -> saving 3");
+						
 						Playtomic.Achievements.save(achievement, function(r3) {
-							test.assertTrue(section, "Request succeeded", r3.success);
-							test.assertEquals(section, "Already had achievement errorcode", r3.errorcode, 506);
+							test.assertTrue(section + "#3", "Request succeeded", r3.success);
+							test.assertEquals(section + "#3", "Already had achievement errorcode", r3.errorcode, 505);
 							
 							// fourth saves with allow duplicates
 							achievement.allowduplicates = true;
 							delete achievement.overwrite;
 							
+							console.log(section + " -> saving 4");
+							
 							Playtomic.Achievements.save(achievement, function(r4) {
-								test.assertTrue(section, "Request succeeded", r4.success);
-								test.assertEquals(section, "Already had achievement errorcode", r4.errorcode, 506);
+								test.assertTrue(section + "#4", "Request succeeded", r4.success);
+								test.assertEquals(section + "#4", "Already had achievement errorcode", r4.errorcode, 505);
 								done();
 							});
 						});
@@ -885,11 +893,14 @@
 	];
 	
 	function next() {
+		
+		document.getElementById("debug").innerHTML = test.render();
+		
 		if(testlist.length == 0) {
 			return;
 		}
 	
-		document.getElementById("debug").innerHTML = test.render();
+		
 		testlist.shift()(next);
 	}
 	
