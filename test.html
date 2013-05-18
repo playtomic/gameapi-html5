@@ -790,9 +790,9 @@
 							achievement.allowduplicates = true;
 							delete achievement.overwrite;
 							
-							Playtomic.Achievements.save(achievement, function(r3) {
-								test.assertTrue(section, "Request succeeded", r3.success);
-								test.assertEquals(section, "Already had achievement errorcode", r3.errorcode, 506);
+							Playtomic.Achievements.save(achievement, function(r4) {
+								test.assertTrue(section, "Request succeeded", r4.success);
+								test.assertEquals(section, "Already had achievement errorcode", r4.errorcode, 506);
 								done();
 							});
 						});
