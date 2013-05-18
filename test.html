@@ -542,11 +542,11 @@
 				console.log(section);
 				
 				var achievements = [
-					{ fields: { rnd: rnd}, publickey: "testpublickey", achievement: "Super Mega Achievement #1", achievementkey: "secretkey", playerid: "1", playername: "ben" }, 
-					{ fields: { rnd: rnd}, publickey: "testpublickey", achievement: "Super Mega Achievement #1", achievementkey: "secretkey", playerid: "2", playername: "michelle" }, 
-					{ fields: { rnd: rnd}, publickey: "testpublickey", achievement: "Super Mega Achievement #1", achievementkey: "secretkey", playerid: "3", playername: "peter" },
-					{ fields: { rnd: rnd}, publickey: "testpublickey", achievement: "Super Mega Achievement #2", achievementkey: "secretkey2", playerid: "3", playername: "peter" }, 
-					{ fields: { rnd: rnd}, publickey: "testpublickey", achievement: "Super Mega Achievement #2", achievementkey: "secretkey2", playerid: "2", playername: "michelle" }
+					{ fields: { rnd: rnd}, achievement: "Super Mega Achievement #1", achievementkey: "secretkey", playerid: "1", playername: "ben" }, 
+					{ fields: { rnd: rnd}, achievement: "Super Mega Achievement #1", achievementkey: "secretkey", playerid: "2", playername: "michelle" }, 
+					{ fields: { rnd: rnd}, achievement: "Super Mega Achievement #1", achievementkey: "secretkey", playerid: "3", playername: "peter" },
+					{ fields: { rnd: rnd}, achievement: "Super Mega Achievement #2", achievementkey: "secretkey2", playerid: "3", playername: "peter" }, 
+					{ fields: { rnd: rnd}, achievement: "Super Mega Achievement #2", achievementkey: "secretkey2", playerid: "2", playername: "michelle" }
 				];
 				
 				function s() {
@@ -585,7 +585,6 @@
 				console.log(section);
 								
 				var options = {
-					publickey: "testpublickey",
 					friendslist: ["1", "2", "3"],
 					filters: { rnd: rnd }
 				};
@@ -615,7 +614,6 @@
 				console.log(section);
 								
 				var options = {
-					publickey: "testpublickey",
 					playerid: "1",
 					filters: { rnd: rnd }
 				};
@@ -642,7 +640,6 @@
 				console.log(section);
 								
 				var options = {
-					publickey: "testpublickey",
 					playerid: "1", 
 					friendslist: ["2", "3"],
 					filters: { rnd: rnd }
@@ -676,7 +673,6 @@
 				console.log(section);
 								
 				var options = {
-					publickey: "testpublickey",
 					filters: { rnd: rnd }
 				};
 
@@ -705,7 +701,6 @@
 				console.log(section);
 								
 				var options = {
-					publickey: "testpublickey",
 					group: true,
 					friendslist: ["2", "3"],
 					filters: { rnd: rnd }
@@ -731,7 +726,6 @@
 				console.log(section);
 								
 				var options = {
-					publickey: "testpublickey",
 					group: true,
 					playerid: "1",
 					friendslist: ["2", "3"],
@@ -762,7 +756,6 @@
 				console.log(section);
 				
 				var achievement = {
-					publickey: "testpublickey",
 					achievement: "Super Mega Achievement #1",
 					achievementkey: "secretkey",
 					playerid: rnd.toString(),
