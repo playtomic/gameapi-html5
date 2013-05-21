@@ -28,6 +28,35 @@
 	
 	var tests = {
 		
+		newsletter: {
+		
+			subscribe: function(done){
+			
+				var obj = { 
+					email: "invalid @email.com"
+				};
+			
+				// invalid
+				Playtomic.Newsletter.subscribe(obj, function(r) {
+					var section = "TestNewsletter.lookup";
+					test.assertFalse(section + "#1", "Request failed", r.success);
+					test.assertEquals(section + "#1", "Mailchimp API error", r.errorcode, 602);
+				
+					// valid 
+					obj.email = "valid@testuri.com";
+					obj.fields = { 
+						STRINGFIELD: "this is a field"
+					};
+				
+					Playtomic.Newsletter.subscribe(obj, function(r2) {
+						test.assertTrue(section + "#2", "Request succeeded", r2.success);
+						test.assertEquals(section + "#2", "No errorcode", r2.errorcode, 0);
+						done();
+					});
+				});
+			}
+		},
+		
 		gamevars: {
 		
 			all: function(done) {
@@ -861,6 +890,7 @@
 	
 	var rnd = Math.floor(Math.random() * 1000000);
 	var testlist = [
+		tests.newsletter.subscribe,
 		tests.gamevars.all,
 		tests.gamevars.single,
 		tests.geoip.lookup,

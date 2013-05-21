@@ -23,6 +23,39 @@ var Playtomic = {};
 		PUBLICKEY = publickey;
 	};
 	
+	// newsletter
+	(function() {
+	
+		var SECTION = "newsletter";
+		var SUBSCRIBE = "subscribe";
+	
+		Playtomic.Newsletter = {
+		
+			/**
+			 * Subscribes a user to your newsletter
+			 * @param options	The options:  { email: , fields: { } }
+			 * @param callback	Your callback function(response)
+			 */
+			subscribe: function(options, callback) {
+				sendAPIRequest(SECTION, SUBSCRIBE, subscribeComplete, callback, options);
+			}
+		}
+		
+		/**
+		 * Processes the response received from the server, returns the data and response to the user's callback
+		 * @param	callback	The user's callback function
+		 * @param	postdata	The data that was posted
+		 * @param	data		The object returned from the server
+		 * @param	response	The response from the server
+		 */
+		function subscribeComplete(callback, postdata, data, response) {
+			if(callback == null)
+				return;
+		
+			callback(response);
+		}
+	})();
+	
 	// achievements
 	(function() {
 	
@@ -383,38 +416,44 @@ var Playtomic = {};
 	var ERRORS = {
 		// General Errors
 		"1": "General error, this typically means the player is unable to connect to the server",
-		"2": "Invalid game credentials. Make sure you use the rihgt public and private keys.",
-		"3": "Request timed out.",
-		"4": "Invalid request.",
+		"2": "Invalid game credentials, make sure you use the rihgt public and private keys",
+		"3": "Request timed out",
+		"4": "Invalid request",
 		
 		// GeoIP Errors
-		"100": "GeoIP API has been disabled for this game.",
+		"100": "GeoIP API has been disabled for this game",
 		
 		// Leaderboard Errors
-		"200": "Leaderboard API has been disabled for this game.",
-		"201": "The player's name wasn't provided.",
-		"203": "Player is banned from submitting scores in this game.",
-		"204": "Score was not saved because it was not the player's best.  You can allow players to have	more than one score by specifying allowduplicates=true in your save options.",
+		"200": "Leaderboard API has been disabled for this game",
+		"201": "The player's name wasn't provided",
+		"203": "Player is banned from submitting scores in this game",
+		"204": "Score was not saved because it was not the player's best.  You can allow players to have	more than one score by specifying allowduplicates=true in your save options",
 
 		// GameVars Errors
-		"300": "GameVars API has been disabled for this game.",
+		"300": "GameVars API has been disabled for this game",
 		
 		// LevelSharing Errors
-		"400": "Level sharing API has been disabled for this game.",
-		"401": "Invalid rating value (must be 1 - 10).",
-		"402": "Player has already rated that level.",
-		"403": "Missing level name.",
-		"404": "Missing level id.",
-		"405": "Level already exists.",
+		"400": "Level sharing API has been disabled for this game",
+		"401": "Invalid rating value (must be 1 - 10)",
+		"402": "Player has already rated that level",
+		"403": "Missing level name",
+		"404": "Missing level id",
+		"405": "Level already exists",
 		
 		// Achievement errors
-		"500": "Achievements API has been disabled for this game.",
-		"501": "Missing playerid.",
-		"502": "Missing player name.",
-		"503": "Missing achievementid.",
-		"504": "Invalid achievementid or achievement key.",
-		"505": "Player already had the achievement.  You can overwrite old achievements with overwrite=true or save each time the player is awarded with allowduplicates=true.",
-		"506": "Player already had the achievement and it was overwritten or a duplicate was saved successfully."
+		"500": "Achievements API has been disabled for this game",
+		"501": "Missing playerid",
+		"502": "Missing player name",
+		"503": "Missing achievementid",
+		"504": "Invalid achievementid or achievement key",
+		"505": "Player already had the achievement, you can overwrite old achievements with overwrite=true or save each time the player is awarded with allowduplicates=true",
+		"506": "Player already had the achievement and it was overwritten or a duplicate was saved successfully",
+		
+		// Newsletter errors
+		// Newsletter errors
+		"600": "Newsletter API has been disabled for this game",
+		"601": "MailChimp API key is not configured",
+		"602": "The MailChimp API returned an error"		
 	};
 
 	function Response(success, errorcode) {
