@@ -774,7 +774,7 @@
 					// second save gets rejected
 					Playtomic.Achievements.save(achievement, function(r2) {
 						test.assertFalse(section + "#2", "Request failed", r2.success);
-						test.assertEquals(section + "#2", "Already had achievement errorcode", r2.errorcode, 506);
+						test.assertEquals(section + "#2", "Already had achievement errorcode", r2.errorcode, 505);
 						
 						// third save overwrites the first
 						achievement.overwrite = true;
@@ -783,7 +783,7 @@
 						
 						Playtomic.Achievements.save(achievement, function(r3) {
 							test.assertTrue(section + "#3", "Request succeeded", r3.success);
-							test.assertEquals(section + "#3", "Already had achievement errorcode", r3.errorcode, 505);
+							test.assertEquals(section + "#3", "Already had achievement errorcode", r3.errorcode, 506);
 							
 							// fourth saves with allow duplicates
 							achievement.allowduplicates = true;
@@ -793,7 +793,7 @@
 							
 							Playtomic.Achievements.save(achievement, function(r4) {
 								test.assertTrue(section + "#4", "Request succeeded", r4.success);
-								test.assertEquals(section + "#4", "Already had achievement errorcode", r4.errorcode, 505);
+								test.assertEquals(section + "#4", "Already had achievement errorcode", r4.errorcode, 506);
 								done();
 							});
 						});
