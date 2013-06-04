@@ -7,7 +7,7 @@ var Playtomic = {};
 		PRIVATEKEY;
   
 	/**
-	 * Initializes the API without sending a View.  This is for page-based sites and applications without a single persistant page
+	 * Initializes the API
 	 * @param	publickey	Your game's public key
 	 * @param	privatekey	Your game's private key
 	 * @param	apiurl		The url to your server, eg https://my-server.herokuapp.com
