@@ -525,10 +525,13 @@
 								playername: "test account",
 								playerid: "test@testuri.com",
 								table: "personal" + rnd,
-								points: 3000,
+								points: 2500,
 								highest: true,
 								allowduplicates: true,
 								fields: {
+									rnd: rnd
+								},
+								filters: {
 									rnd: rnd
 								},
 								perpage: 5
@@ -538,21 +541,24 @@
 								
 								scores = scores || [];
 								numscores = numscores || -1;
+								
+								console.log(JSON.stringify(scores, null, "\t"));
 							
 								test.assertTrue(section, "Request succeeded", r.success);
 								test.assertEquals(section, "No errorcode", r.errorcode, 0);
-								test.assertTrue(section, "Received 5 scores", scores.length == 5);
-								test.assertTrue(section, "Received numscores 10", numscores == 10);
-								test.assertTrue(section, "Score 1 ranked 6", scores[0].rank == 6);
-								test.assertTrue(section, "Score 2 ranked 7", scores[1].rank == 7);
-								test.assertTrue(section, "Score 3 ranked 8", scores[2].rank == 8);
-								test.assertTrue(section, "Score 4 ranked 9", scores[3].rank == 9);
-								test.assertTrue(section, "Score 5 ranked 10", scores[4].rank == 10);
-								test.assertTrue(section, "Score 1 points", scores[0].points == 4000);
-								test.assertTrue(section, "Score 2 points", scores[1].points == 3000);
-								test.assertTrue(section, "Score 3 points", scores[2].points == 3000);
-								test.assertTrue(section, "Score 4 points", scores[3].points == 2000);
-								test.assertTrue(section, "Score 5 points", scores[4].points == 1000);
+								test.assertEquals(section, "Received 5 scores", scores.length, 5);
+								test.assertEquals(section, "Received numscores 10", numscores, 10);
+								test.assertEquals(section, "Score 1 ranked 6", scores[0].rank, 6);
+								test.assertEquals(section, "Score 2 ranked 7", scores[1].rank, 7);
+								test.assertEquals(section, "Score 3 ranked 8", scores[2].rank, 8);
+								test.assertEquals(section, "Score 4 ranked 9", scores[3].rank, 9);
+								test.assertEquals(section, "Score 5 ranked 10", scores[4].rank, 10);
+								test.assertEquals(section, "Score 1 points", scores[0].points, 4000);
+								test.assertEquals(section, "Score 2 points", scores[1].points, 3000);
+								test.assertEquals(section, "Score 3 points", scores[2].points, 2500);
+								test.assertEquals(section, "Score 2 submitted", scores[2].submitted, true);
+								test.assertEquals(section, "Score 4 points", scores[3].points, 2000);
+								test.assertEquals(section, "Score 5 points", scores[4].points, 1000);
 								done();
 							});
 						}
