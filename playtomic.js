@@ -448,8 +448,7 @@ var Playtomic = {};
 		"504": "Invalid achievementid or achievement key",
 		"505": "Player already had the achievement, you can overwrite old achievements with overwrite=true or save each time the player is awarded with allowduplicates=true",
 		"506": "Player already had the achievement and it was overwritten or a duplicate was saved successfully",
-		
-		// Newsletter errors
+
 		// Newsletter errors
 		"600": "Newsletter API has been disabled for this game",
 		"601": "MailChimp API key is not configured",
