@@ -431,8 +431,8 @@ var Playtomic = {};
 
 		// GameVars Errors
 		"300": "GameVars API has been disabled for this game",
-		
-		// LevelSharing Errors
+
+		// PlayerLevels Errors
 		"400": "Level sharing API has been disabled for this game",
 		"401": "Invalid rating value (must be 1 - 10)",
 		"402": "Player has already rated that level",
